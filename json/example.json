@@ -1,0 +1,15 @@
+{
+	"id_scoring":2,
+	"net_income":5000000,
+	"angsuran":3650000,
+	"nilai_likuidasi_agunan":45000000,
+	"plafon":200000000,
+	"jenis_bukti_kepemilikan_agunan":"Kwitansi",
+	"usia":27,
+	"debitur_baru":"Ya",
+	"lama_usaha":2,
+	"status_perkawinan":"Tidak",
+	"punya_usaha_sampingan":"Ya",
+	"tujuan_penggunaan_kredit":"Usaha",
+	"punya_pelanggan_tetap":"Tidak"
+}
