@@ -120,6 +120,7 @@ func consumeKafkaAll(topic string) {
                 "go.application.rebalance.enable": true,
                 "default.topic.config":            kafka.ConfigMap{"auto.offset.reset": "earliest"}})   
         if err!=nil{
+		fmt.Fprintf(os.Stderr, "Failed to create consumer: %s\n", err)
                 os.Exit(1)
         }
 
@@ -159,4 +160,6 @@ func consumeKafkaAll(topic string) {
 			}
 		}
 	}
+	fmt.Printf("Closing consumer\n")
+	consumer.Close()
 }
