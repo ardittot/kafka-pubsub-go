@@ -10,19 +10,51 @@ import (
 	"gopkg.in/resty.v1"
 )
 
+// *** Modify your function here ******************** //
+func useConsumer(msg *kafka.Message, topic string) {
+	var data interface{}
+	urlList := consumerUrl[topic]
+	msgVal := msg.Value
+	json.Unmarshal(msgVal, &data)
+	fmt.Printf("Message:\n%+v\n", data)
+	fmt.Println(urlList)
+	for _,url := range urlList {
+	    go func() {
+		//if len(url)>0 {
+		    fmt.Printf("** %s : %v\n",url,data)
+	            resty.R().
+                    SetBody(data).
+                    Post(url)
+	        //}
+	    }()
+	}
+}
+var (
+    brokers = "10.148.0.4:9092"
+)
+// ************************************************** //
+
 var producer *kafka.Producer
 //var consumer *kafka.Consumer
 var topicList topicType
 
 var (
-    brokers = "10.148.0.4:9092"
     consumerRun = make(map[string] (chan bool))
+    consumerUrl = make(map[string] urlType)
 )
 
-type topicType[]string
+type topicType []string
+type urlType []string
 type ConsumerParam struct {
     Topic string `json:topic`
     Group string `json:group`
+}
+type ConsumerUrl struct {
+    Topic string `json:topic`
+    Url []string `json:url`
+}
+type ConsumerUrlParam struct {
+    Data []ConsumerUrl `json:data`
 }
 
 func (l *topicType) removeElement(item string) {
@@ -42,14 +74,48 @@ func(l *topicType) addElement(item string) {
     *l = l1
 }
 
-func useConsumer(msg *kafka.Message) {
-	var data interface{}
-	msgVal := msg.Value
-	json.Unmarshal(msgVal, &data)
-	fmt.Printf("Message:\n%+v\n", data)
-	resty.R().
-            SetBody(data).
-            Post("http://0.0.0.0:8000/crs")
+func (l *urlType) removeElement(item string) {
+    l1 := *l
+    for i, other := range *l {
+        if other == item {
+            l1 = append(l1[:i], l1[i+1:]...)
+        }
+    }
+    *l = l1
+}
+
+func(l *urlType) addElement(item string) {
+    l1 := *l
+    l1.removeElement(item)
+    l1 = append(l1, item)
+    *l = l1
+}
+
+func addConsumerUrl(param ConsumerUrlParam) {
+    arr := param.Data
+    for _,par := range arr {
+	topic := par.Topic
+	urlList := par.Url
+        for _,url := range urlList {
+	    l := consumerUrl[topic]
+	    l.removeElement(url)
+	    l.addElement(url)
+	    consumerUrl[topic] = l
+	}
+    }
+}
+
+func deleteConsumerUrl(param ConsumerUrlParam) {
+    arr := param.Data
+    for _,par := range arr {
+	topic := par.Topic
+	urlList := par.Url
+        for _,url := range urlList {
+	    l := consumerUrl[topic]
+	    l.removeElement(url)
+	    consumerUrl[topic] = l
+	}
+    }
 }
 
 func InitKafkaProducer() (err error) {
@@ -127,7 +193,7 @@ func consumeKafkaAll(param ConsumerParam) (err error) {
                             consumer.Unassign()
                         case *kafka.Message:
                             //consumer.Commit()
-			    useConsumer(e)
+			    useConsumer(e, topic)
                             //data_byte := e.Value
                             //json.Unmarshal(data_byte, &data)
                             //fmt.Printf("Message:\n%+v\n", data)

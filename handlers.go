@@ -6,10 +6,28 @@ import (
     //"strconv"
     //"fmt"
 )
+
 func GetTopics(c *gin.Context) {
     c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data":topicList})
 }
 
+func AddConsumerUrl(c *gin.Context) {
+    var param ConsumerUrlParam
+    if err := c.ShouldBindJSON(&param); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    }
+    addConsumerUrl(param)
+    c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data":topicList})
+}
+
+func DeleteConsumerUrl(c *gin.Context) {
+    var param ConsumerUrlParam
+    if err := c.ShouldBindJSON(&param); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    }
+    deleteConsumerUrl(param)
+    c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data":topicList})
+}
 
 func AddConsumerTopic(c *gin.Context) {
     var param ConsumerParam
