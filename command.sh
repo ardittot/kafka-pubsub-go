@@ -1,4 +1,17 @@
-# Install all required GO packages
+# Install librdkafka
+cd ~
+git clone https://github.com/edenhill/librdkafka.git
+sudo mv librdkafka /opt/
+cd /opt/librdkafka
+./configure --prefix /usr
+make
+sudo make install
+echo 'export PKG_CONFIG_PATH="/opt/librdkafka/src"' >> /etc/profile.d/custom.sh
+source /etc/profile.d/custom.sh
+cd ~
+
+# Install all required packages
+go get -u github.com/confluentinc/confluent-kafka-go/kafka
 go get -u github.com/gin-gonic/gin
 go get -u gopkg.in/resty.v1
 
