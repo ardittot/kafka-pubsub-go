@@ -48,7 +48,8 @@ go build
 curl -X GET http://localhost:8020/topic
 ```
 
-### Add new topic for kafka consumer to be running forever as a goroutine
+### Add new topic for kafka consumer 
+It will be running forever as a goroutine
 ```
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/add
 ```
@@ -68,7 +69,8 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d @./json/example.json http://localhost:8020/publish/<topic-name>
 ```
 
-### Remove a topic, stop its consumer goroutine
+### Remove a topic
+Stop its consumer goroutine
 ```
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/delete
 ```
