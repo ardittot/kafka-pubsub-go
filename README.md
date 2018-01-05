@@ -32,7 +32,7 @@ go get -u gopkg.in/resty.v1
 - Function useConsumer():  to customize your desired commands for consumed data from Kafka
 
 (2) Edit main.go
-Change the url route
+- Change the url route
 
 ## Compile & run
 ```
