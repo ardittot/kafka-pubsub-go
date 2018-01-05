@@ -7,18 +7,16 @@ import (
         "encoding/json"
         //"syscall"
         //"os/signal"
+	"gopkg.in/resty.v1"
 )
 
 var producer *kafka.Producer
 //var consumer *kafka.Consumer
-//var sigchan chan os.Signal
 var topicList topicType
-//var consumerRun map[string]bool
-//var consumerRun map[string]chan bool
 
 var (
     brokers = "10.148.0.4:9092"
-    consumerRun = make(map[string]bool)
+    consumerRun = make(map[string] (chan bool))
 )
 
 type topicType[]string
@@ -44,8 +42,17 @@ func(l *topicType) addElement(item string) {
     *l = l1
 }
 
+func useConsumer(msg *kafka.Message) {
+	var data interface{}
+	msgVal := msg.Value
+	json.Unmarshal(msgVal, &data)
+	fmt.Printf("Message:\n%+v\n", data)
+	resty.R().
+            SetBody(data).
+            Post("http://0.0.0.0:8000/crs")
+}
+
 func InitKafkaProducer() (err error) {
-        //brokers = "10.148.0.4:9092"
         producer, err = kafka.NewProducer(&kafka.ConfigMap{"bootstrap.servers": brokers})
         if err!=nil{
                 os.Exit(1)
@@ -69,18 +76,17 @@ func produceKafka(topic string, data interface{}) {
 }
 
 func deleteConsumerTopic(param ConsumerParam) {
-	consumerRun[param.Topic] = false
+        consumerRun[param.Topic] <- true
+	close(consumerRun[param.Topic])
+	topicList.removeElement(param.Topic)
+	fmt.Printf("** Deleting topic; Current topics: %v",topicList)
 }
 
 func consumeKafkaAll(param ConsumerParam) (err error) {
-        var data interface{}
         topic := param.Topic
         group := param.Group
-
-	//consumerRun[topic] = make(chan bool)
-        run := make(chan bool)
-        //sigchan := make(chan os.Signal, 1)
-        //signal.Notify(sigchan, syscall.SIGINT, syscall.SIGTERM)
+	exit := false
+	consumerRun[topic] = make(chan bool)
 
         consumer, err := kafka.NewConsumer(&kafka.ConfigMap{
                 "bootstrap.servers":               brokers,
@@ -99,51 +105,47 @@ func consumeKafkaAll(param ConsumerParam) (err error) {
                 os.Exit(2)
         }
 
-	consumerRun[topic] = true
-        go func() {
-                defer close(run)
-                for {
-		    ev := <-consumer.Events()
-                    //select {
-                    //case run := <- consumerRun[topic]:
-                    //      fmt.Printf("Terminating topic %s\n", topic)
-                    //      consumerRun[topic] = false
+	topicList.addElement(topic)
+	fmt.Printf("** Adding topic; Current topics: %v",topicList)
 
-                    //case ev := <-consumer.Events():
-                    //ev := <-consumer.Events()
-                    switch e := ev.(type) {
-                    case kafka.AssignedPartitions:
+        go func() {
+                for {
+                    select {
+                    case <-consumerRun[topic]:
+                        //fmt.Printf("Terminating topic %s\n", topic)
+			exit = true
+			//break
+
+                    case ev := <-consumer.Events():
+                        //ev := <-consumer.Events()
+                        switch e := ev.(type) {
+                        case kafka.AssignedPartitions:
                             fmt.Fprintf(os.Stderr, "%% %v\n", e)
                             consumer.Assign(e.Partitions)
-                    case kafka.RevokedPartitions:
+                        case kafka.RevokedPartitions:
                             fmt.Fprintf(os.Stderr, "%% %v\n", e)
                             consumer.Unassign()
-                    case *kafka.Message:
+                        case *kafka.Message:
                             //consumer.Commit()
-                            data_byte := e.Value
-                            json.Unmarshal(data_byte, &data)
-                            fmt.Printf("Message:\n%+v\n", data)
+			    useConsumer(e)
+                            //data_byte := e.Value
+                            //json.Unmarshal(data_byte, &data)
+                            //fmt.Printf("Message:\n%+v\n", data)
                             //fmt.Printf("Message:\n%s\n", string(data_byte))
                             //fmt.Printf("%% Message on %s:\n%s\n", e.TopicPartition, string(e.Value))
-                    case kafka.PartitionEOF:
+                        case kafka.PartitionEOF:
                             fmt.Printf("%% Reached %v\n", e)
-                    case kafka.Error:
+                        case kafka.Error:
                             fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
-			    consumerRun[topic] = false
-                    }
+                        }
+		    }
+		    if exit==true {
+		        break
+		    }
                 }
+        	//fmt.Printf("Closing consumer\n")
+        	consumer.Close()
         }()
 
-	go func() {
-		for {
-		if consumerRun[topic]==false {
-			_ = <- run
-			fmt.Fprintf(os.Stderr, "%% Remove consumer %s\n", topic)
-		}
-		}
-	}()
-
-        //fmt.Printf("Closing consumer\n")
-        //consumer.Close()
         return
 }

@@ -6,6 +6,10 @@ import (
     //"strconv"
     //"fmt"
 )
+func GetTopics(c *gin.Context) {
+    c.JSON(http.StatusOK, gin.H{"status": http.StatusOK, "data":topicList})
+}
+
 
 func AddConsumerTopic(c *gin.Context) {
     var param ConsumerParam
