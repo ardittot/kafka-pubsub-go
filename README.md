@@ -54,6 +54,12 @@ It will be running forever as a goroutine
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/add
 ```
 
+### Remove a topic
+Stop its consumer goroutine
+```
+curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/delete
+```
+
 ### Add microservices URL as kafka subscriber via REST
 ```
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"data" : [{"topic":"test1","url":["http://0.0.0.0:8000","http://127.0.0.1:8000"]}, {"topic":"test2","url":["http://0.0.0.0:8080","http://127.0.0.1:8080"]}]}' http://localhost:8020/subscribe/url/add
@@ -67,10 +73,4 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -
 ### Publish data to Kafka
 ```
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d @./json/example.json http://localhost:8020/publish/<topic-name>
-```
-
-### Remove a topic
-Stop its consumer goroutine
-```
-curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/delete
 ```
