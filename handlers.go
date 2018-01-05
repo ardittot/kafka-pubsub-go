@@ -7,21 +7,27 @@ import (
     //"fmt"
 )
 
-/*
-func UpdateTopics(c *gin.Context) {
-    topicAll,err := updateTopics("topics.txt")
-    if err==nil {
-	topics = topicAll
-	//consumer.SubscribeTopics(topics, nil)
-	for _, element := range someSlice {
-	    go consumeKafkaAll(element)
-	}
+func AddConsumerTopic(c *gin.Context) {
+    var param ConsumerParam
+    if err := c.ShouldBindJSON(&param); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    }
+    err := consumeKafkaAll(param) // Add new Kafka topic 
+    if err==nil{
         c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
     } else {
         c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
     }
 }
-*/
+
+func DeleteConsumerTopic(c *gin.Context) {
+    var param ConsumerParam
+    if err := c.ShouldBindJSON(&param); err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+    }
+    deleteConsumerTopic(param) // Add new Kafka topic 
+    c.JSON(http.StatusOK, gin.H{"status": http.StatusOK})
+}
 
 func RunProduce(c *gin.Context) {
     var data    interface{}
