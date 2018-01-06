@@ -45,19 +45,19 @@ go build
 
 ### Get list of topics of the consumer
 ```
-curl -X GET http://localhost:8020/topic
+curl -X GET http://localhost:8020/subscribe/topic
 ```
 
 ### Add new topic for kafka consumer 
 It will keep consuming data from kafka topic forever as a goroutine, and pass the data to any microservices (use the function useConsumer() inside kafka-pubsub.go)
 ```
-curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/add
+curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2","group":"test-group"}' http://localhost:8020/subscribe/topic/add
 ```
 
 ### Remove a topic from kafka consumer
 Stop its consumer goroutine
 ```
-curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2"}' http://localhost:8020/subscribe/delete
+curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"topic":"test2"}' http://localhost:8020/subscribe/topic/delete
 ```
 
 ### Add microservices URL as kafka subscriber via REST
