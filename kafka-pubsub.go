@@ -16,8 +16,9 @@ func useConsumer(msg *kafka.Message, topic string) {
 	urlList := consumerUrl[topic]
 	msgVal := msg.Value
 	json.Unmarshal(msgVal, &data)
+	fmt.Printf("**********\nMessage:\n%+v\n", data,url)
 	for _,url := range urlList {
-	    fmt.Printf("**********\nMessage:\n%+v\nSend to: %s\n**********\n\n", data,url)
+	    fmt.Printf("Send to: %s\n", url)
 	    go func() {
 		//if len(url)>0 {
 	            resty.R().
@@ -26,6 +27,7 @@ func useConsumer(msg *kafka.Message, topic string) {
 	        //}
 	    }()
 	}
+	fmt.Printf("**********\n\n")
 }
 var (
     brokers = "10.148.0.4:9092"
