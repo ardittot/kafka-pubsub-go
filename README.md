@@ -65,7 +65,7 @@ curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"data" : [{"topic":"test1","url":["http://0.0.0.0:8000","http://127.0.0.1:8000"]}, {"topic":"test2","url":["http://0.0.0.0:8080","http://127.0.0.1:8080"]}]}' http://localhost:8020/subscribe/url/add
 ```
 
-### Delete microservices URL from kafka subscriber via REST
+### Delete microservices URL from kafka subscriber
 ```
 curl -X POST -H "Accept: application/json" -H "Content-Type: application/json" -d '{"data" : [{"topic":"test1","url":["http://0.0.0.0:8000","http://127.0.0.1:8000"]}, {"topic":"test2","url":["http://0.0.0.0:8080","http://127.0.0.1:8080"]}]}' http://localhost:8020/subscribe/url/delete
 ```
