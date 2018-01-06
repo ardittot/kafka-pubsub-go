@@ -16,12 +16,11 @@ func useConsumer(msg *kafka.Message, topic string) {
 	urlList := consumerUrl[topic]
 	msgVal := msg.Value
 	json.Unmarshal(msgVal, &data)
-	fmt.Printf("Message:\n%+v\n", data)
+	fmt.Printf("**********\nMessage:\n%+v\n**********\n\n", data)
 	fmt.Println(urlList)
 	for _,url := range urlList {
 	    go func() {
 		//if len(url)>0 {
-		    fmt.Printf("** %s : %v\n",url,data)
 	            resty.R().
                     SetBody(data).
                     Post(url)
@@ -172,7 +171,7 @@ func consumeKafkaAll(param ConsumerParam) (err error) {
         }
 
 	topicList.addElement(topic)
-	fmt.Printf("** Adding topic; Current topics: %v",topicList)
+	fmt.Printf("** Adding topic; Current topics: %v\n\n",topicList)
 
         go func() {
                 for {
@@ -200,7 +199,7 @@ func consumeKafkaAll(param ConsumerParam) (err error) {
                             //fmt.Printf("Message:\n%s\n", string(data_byte))
                             //fmt.Printf("%% Message on %s:\n%s\n", e.TopicPartition, string(e.Value))
                         case kafka.PartitionEOF:
-                            fmt.Printf("%% Reached %v\n", e)
+                            fmt.Printf("%% Reached %v\n\n", e)
                         case kafka.Error:
                             fmt.Fprintf(os.Stderr, "%% Error: %v\n", e)
                         }
