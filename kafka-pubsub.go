@@ -191,6 +191,7 @@ func consumeKafkaAll(param ConsumerParam) (err error) {
                         case kafka.RevokedPartitions:
                             fmt.Fprintf(os.Stderr, "%% %v\n", e)
                             consumer.Unassign()
+			    exit = true
                         case *kafka.Message:
                             //consumer.Commit()
 			    useConsumer(e, topic)
