@@ -16,8 +16,8 @@ func useConsumer(msg *kafka.Message, topic string) {
 	urlList := consumerUrl[topic]
 	msgVal := msg.Value
 	json.Unmarshal(msgVal, &data)
-	fmt.Printf("**********\nMessage:\n%+v\n**********\n\n", data)
 	for _,url := range urlList {
+	    fmt.Printf("**********\nMessage:\n%+v\n**********\nSend to: url\n\n", data)
 	    go func() {
 		//if len(url)>0 {
 	            resty.R().
