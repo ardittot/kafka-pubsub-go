@@ -2,6 +2,48 @@
 
 ## Preparation
 
+Update Ubuntu
+```
+sudo apt-get -f update
+sudo apt-get -y upgrade
+```
+
+Create a new shell bootstrap script _/etc/profile.d/custom.sh_
+```
+sudo touch /etc/profile.d/custom.sh
+```
+
+### Install Go
+```
+sudo curl -O https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz
+sudo tar -xvf go1.9.2.linux-amd64.tar.gz
+sudo mv go /usr/local
+sudo ln -s /usr/local/go /opt/go
+```
+
+Create a new directory for Go third party packages
+```
+sudo mkdir $GOROOT/work
+sudo chmod 777 /opt/go/work
+```
+
+Setup environmet variables for Go
+> export GOROOT=/opt/go
+>
+> export PATH=$PATH:$GOROOT/bin
+>
+> export GOPATH=/opt/go/work
+
+Source the shell bootstrap script
+```
+source /etc/profile.d/custom.sh
+```
+
+Update the required dependencies for librdkafka (explained next step)
+```
+sudo apt-get install -y pkg-config lxc-dev
+```
+
 ### Install librdkafka
 ```
 cd ~
@@ -14,7 +56,12 @@ cd /opt/librdkafka
 ./configure --prefix /usr
 make
 sudo make install
-echo 'export PKG_CONFIG_PATH="/opt/librdkafka/src"' >> /etc/profile.d/custom.sh
+```
+
+Insert this to _/etc/profile.d/custom.sh_
+> export PKG_CONFIG_PATH="/opt/librdkafka/src"
+
+```
 source /etc/profile.d/custom.sh
 cd ~
 ```
