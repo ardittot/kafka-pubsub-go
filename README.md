@@ -4,6 +4,9 @@ This example is using Ubuntu 16.04 (LTS)
 
 ## Preparation
 
+Setup kafka cluster(s)
+https://github.com/ardittot/kafka-setup-explore/blob/master/README.md
+
 Update Ubuntu
 ```
 sudo apt-get -f update
