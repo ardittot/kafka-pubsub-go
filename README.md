@@ -1,5 +1,7 @@
 # Confluent-Kafka-Client using Go
 
+This example is using Ubuntu 16.04 (LTS)
+
 ## Preparation
 
 Update Ubuntu
