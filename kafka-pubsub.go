@@ -74,6 +74,15 @@ func(l *topicType) addElement(item string) {
     *l = l1
 }
 
+func (l *topicType) containElement(a string) bool {
+    for _, b := range *l {
+        if b == a {
+            return true
+        }
+    }
+    return false
+}
+
 func (l *urlType) removeElement(item string) {
     l1 := *l
     for i, other := range *l {
@@ -89,6 +98,15 @@ func(l *urlType) addElement(item string) {
     l1.removeElement(item)
     l1 = append(l1, item)
     *l = l1
+}
+
+func (l *urlType) containElement(a string) bool {
+    for _, b := range *l {
+        if b == a {
+            return true
+        }
+    }
+    return false
 }
 
 func addConsumerUrl(param ConsumerUrlParam) {
@@ -142,9 +160,11 @@ func produceKafka(topic string, data interface{}) {
 }
 
 func deleteConsumerTopic(param ConsumerParam) {
-        consumerRun[param.Topic] <- true
-	close(consumerRun[param.Topic])
-	topicList.removeElement(param.Topic)
+	if topicList.containElement(param.Topic) {
+        	consumerRun[param.Topic] <- true
+		close(consumerRun[param.Topic])
+		topicList.removeElement(param.Topic)
+	}
 	fmt.Printf("** Deleting topic; Current topics: %v",topicList)
 }
 
