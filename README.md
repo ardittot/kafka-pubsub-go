@@ -26,18 +26,18 @@ sudo mv go /usr/local
 sudo ln -s /usr/local/go /opt/go
 ```
 
-Create a new directory for Go third party packages
-```
-sudo mkdir $GOROOT/work
-sudo chmod 777 /opt/go/work
-```
-
 Setup environmet variables for Go
 > export GOROOT=/opt/go
 >
 > export PATH=$PATH:$GOROOT/bin
 >
 > export GOPATH=/opt/go/work
+
+Create a new directory for Go third party packages
+```
+sudo mkdir $GOPATH
+sudo chmod 777 $GOPATH
+```
 
 Source the shell bootstrap script
 ```
